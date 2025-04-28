@@ -1,15 +1,21 @@
 ﻿@page "/update/{Id:int}"
+@using NewsPortal.Application
 @using NewsPortal.DTOs
 @using NewsPortal.Entity
 @rendermode InteractiveServer
 @inject NavigationManager Navigation
 @inject HttpClient Http
+@inject AppState AppState
 
 
 
-@if(user == null)
+@if (!AppState.IsLoggedIn)
 {
-    <p>Loading User Data.....</p>
+    <p>Please log in to edit your information.</p>
+}
+else if (user == null)
+{
+    < p > Loading user data...</ p >
 }
 else
 {
