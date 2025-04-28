@@ -1,0 +1,65 @@
+﻿@using NewsPortal.Application
+@rendermode InteractiveServer
+@inject AppState AppState
+@inject NavigationManager Navigation
+
+
+@if (isLoading)
+{
+    
+        <div class="d-flex align-items-center">
+       @*  <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Logging out...</span>
+        </div> *@
+        <span class="ms-2">Logging out...</span>
+    </div>
+}
+else
+{
+    <a class ="bi bi-box-arrow-right" @onclick ="Logout">Logout</a>
+    @*class="btn btn-link"*@
+}
+
+
+@* <style>
+    .dropdown-item {
+        width: 100%;
+        padding: 8px 12px;
+        text-align: left;
+        background: none;
+        border: none;
+        cursor: pointer;
+        display: block;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* Styling for the Logout button */
+    .logout-btn {
+        width: 100%;
+        padding: 8px 12px;
+        text-align: left;
+        background: none;
+        border: none;
+        font-size: 1rem; /* Same font size as other items */
+        cursor: pointer;
+        display: block;
+    }
+
+        .logout-btn:hover {
+            background-color: #f8f9fa; /* Same hover effect */
+        }
+</style> *@
+
+@code {
+
+    private bool isLoading = false;
+
+    private async Task Logout()
+    {
+        isLoading = true;
+        await Task.Delay(1000);
+        AppState.Logout();
+        Navigation.NavigateTo("/");
+    }
+}

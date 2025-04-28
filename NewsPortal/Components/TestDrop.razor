@@ -1,0 +1,123 @@
+﻿@page "/drop"
+@using NewsPortal.Application
+@using NewsPortal.Entity
+@rendermode InteractiveServer
+@inject IJSRuntime JS
+@inject AppState AppState
+@inject NavigationManager Navigation
+
+
+
+<div class="dropdown">
+    @* <button class="dropdown-toggle" @onclick="ToggleDropdown">
+       @(string.IsNullOrEmpty(AppState.UserEmail) ? "Guest" : AppState.UserEmail.Split('@')[0])
+    </button> *@
+    <button class="dropdown-toggle" @onclick="ToggleDropdown">
+        @(AppState.IsLoggedIn && AppState.currentUser != null
+                ? AppState.currentUser.Email.Split('@')[0]
+                : "Guest")
+    </button>
+
+
+    @if (isOpen)
+    {
+        <div class="dropdown-menu show">
+            @if (AppState.currentUser != null)
+            {
+                <button class="dropdown-item" @onclick="() => NavigateToEdit(AppState.currentUser.Id)">
+                    Update Info
+                </button>
+            }
+            <button class="dropdown-item">Item 2</button>
+            <a class="dropdown-item logbtn">
+                <NewsPortal.Components.Pages.LogOut />
+                @*  Item 3 *@
+            </a>
+        </div>
+        
+        @* <div class="dropdown-menu show">
+            @*<button class="dropdown-item">Update Info</button>*@  
+           @* <button class="dropdown-item" @onclick="() => NavigateToEdit(AppState.currentUser?.Id)">
+                    Update Info
+           </button>
+           <button class="dropdown-item">Item 2</button>
+           <a class="dropdown-item logbtn">
+                    <NewsPortal.Components.Pages.LogOut />
+           </a> *@
+       @* </div> *@
+        
+
+    }
+
+</div>
+
+@* custom-logout-item *@
+
+<style>
+    .logbtn {
+    /*float: left; */
+    margin:0 !important;
+    padding:0 !important; 
+    } 
+    .dropdown {
+    position: relative;
+    display: inline-block;
+    }
+
+    .dropdown-toggle {
+    background-color: rgba(52, 58, 64, 0.5);
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    }
+
+    .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: max-content;
+    min-width: 120px;
+    max-width: 90vw;
+    z-index: 1000;
+    padding: 10px;
+    color: black;
+    background-color: white;
+    box-sizing: border-box;
+    }
+
+
+    .dropdown-item {
+    width: 50%;
+    /* padding: 4px; */
+    text-align:center;
+    border: none;
+    background: none;
+    }
+
+    .dropdown-item:hover,
+    .dropdown-item:focus,
+    .dropdown-item:active {
+    background-color: transparent !important; /* or your preferred hover color */
+    color: black !important; /* Ensure text color stays visible */
+    }
+
+</style>
+
+@code {
+    private bool isOpen = false;
+
+    private RegisterUser user;
+
+    private async Task ToggleDropdown()
+    {
+        isOpen = !isOpen;
+        await JS.InvokeVoidAsync("console.log", $"Dropdown is {(isOpen ? "open" : "closed")}");
+        StateHasChanged(); // optional, ensures update
+    }
+
+    private void NavigateToEdit(int id)
+    {
+        Navigation.NavigateTo($"/update/{id}");
+    }
+}

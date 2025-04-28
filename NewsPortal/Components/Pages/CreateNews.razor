@@ -1,0 +1,103 @@
+﻿@* @page "/create"
+@rendermode InteractiveServer
+@using NewsPortal.Enums
+@using NewsPortal.Model
+@inject IWebHostEnvironment _webhost
+@inject HttpClient Http
+@using System.Text.Json
+
+
+<h3>Publish a News</h3>
+
+<EditForm Model="@news" OnValidSubmit="HandleSubmit" FormName="newsForm">
+
+    <div>
+        <label>Title:</label>
+        <InputText @bind-Value="@news.Title" class="form-control" />
+    </div>
+
+    <div>
+        <label>Category:</label>
+        <InputSelect @bind-Value="@news.Category">
+            @foreach (var category in Enum.GetValues(typeof(NewsCategoryEnum)))
+            {
+                <option value="@category">@category</option>
+            }
+        </InputSelect>
+    </div>
+
+    <div>
+        <label>Description:</label>
+        <InputTextArea @bind-Value="@news.Description" />
+    </div>
+
+    <div>
+        <label>Image URL:</label>
+        <InputFile OnChange="HandleFileChange" />
+    </div>
+
+    <button type="submit">Publish</button>
+
+</EditForm>
+
+@code {
+    private NewsModel news = new();
+
+    
+
+    private async Task HandleSubmit()
+    {
+        Console.WriteLine($"Title: {news.Title}");
+        Console.WriteLine($"Category: {news.Category}");
+        Console.WriteLine($"Description: {news.Description}");
+        Console.WriteLine($"ImageUrl: {news.ImageUrl}");
+        Console.WriteLine(JsonSerializer.Serialize(news));
+
+        
+        var response = await Http.PostAsJsonAsync("api/News/create_news", news);
+
+        if (response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("Success!");
+        }
+        else
+        {
+            Console.WriteLine("Failed!");
+        }
+    }
+
+
+
+
+    private async Task HandleFileChange(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+
+        if (file != null)
+        {
+            // Set the destination folder inside wwwroot (e.g., /images/)
+            var folderPath = Path.Combine(_webhost.ContentRootPath, "wwwroot", "images");
+
+            // Make sure the folder exists
+            // if (!Directory.Exists(folderPath))
+            // {
+            //     Directory.CreateDirectory(folderPath);
+            // }
+
+            // Generate a unique file name to avoid collisions
+            var fileName = Path.Combine(folderPath, Guid.NewGuid().ToString() + Path.GetExtension(file.Name));
+
+            // Save the file to the folder
+            using (var fileStream = new FileStream(fileName, FileMode.Create))
+            {
+                await file.OpenReadStream().CopyToAsync(fileStream);
+            }
+
+            // Set the image URL to be sent to the database
+            news.ImageUrl = $"/images/{Path.GetFileName(fileName)}"; // URL to store in the database
+        }
+    }
+
+
+}
+ *@

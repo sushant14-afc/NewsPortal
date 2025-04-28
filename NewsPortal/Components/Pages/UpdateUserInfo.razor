@@ -1,0 +1,155 @@
+﻿@page "/update/{Id:int}"
+@using NewsPortal.DTOs
+@using NewsPortal.Entity
+@rendermode InteractiveServer
+@inject NavigationManager Navigation
+@inject HttpClient Http
+
+
+
+@if(user == null)
+{
+    <p>Loading User Data.....</p>
+}
+else
+{
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-4">
+                <div class="border p-4 rounded shadow-sm">
+                    <h4 class="text-center mb-4">Edit User Information</h4>
+
+                    <EditForm Model="@newUserInfo" OnValidSubmit="HandleSubmit">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+
+                        <!-- Email Field -->
+                        <div class="mb-4">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" @bind="newUserInfo.Email" placeholder="Enter your email" />
+                        </div>
+
+                        <!-- Current Password Field -->
+                        <div class="mb-4">
+                            <label for="currentPassword" class="form-label">Current Password</label>
+                            <input type="password" class="form-control" id="currentPassword" @bind="newUserInfo.CurrentPassword" placeholder="Enter current password" />
+                        </div>
+
+                        <!-- New Password Field -->
+                        <div class="mb-4">
+                            <label for="newPassword" class="form-label">New Password</label>
+                            <input type="password" class="form-control" id="newPassword" @bind="newUserInfo.NewPassword" placeholder="Enter a new password" />
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-flex justify-content-center">
+                            <button type="submit" class="btn btn-primary btn-lg w-100">Update</button>
+                        </div>
+                    </EditForm>
+
+                    @if (!string.IsNullOrEmpty(Message))
+                    {
+                        <p class="text-center text-danger mt-3">@Message</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    @* <div>
+        <h4>Edit User</h4>
+        <EditForm Model="@newUserInfo" OnValidSubmit="HandleSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" @bind="newUserInfo.Email"/>
+            </div>
+
+            <div class="mb-3">
+                <label for="currentPassword" class="form-label">Current Password</label>
+                <input type="password" class="form-control" id="currentPassword" @bind="newUserInfo.CurrentPassword" />
+            </div>
+
+            <div class="mb-3">
+                <label for="newPassword" class="form-label">New Password</label>
+                <input type="password" class="form-control" id="newPassword" @bind="newUserInfo.NewPassword" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+        </EditForm>
+
+        @if (!string.IsNullOrEmpty(Message))
+        {
+            <p class="text-center text-danger mt-3">@Message</p>
+        }
+    </div> *@
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private UpdateInfo newUserInfo = new();
+
+    private RegisterUser user;
+
+    private string Message;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Fetch the user data based on the captured ID, but do not display the email
+        user = await Http.GetFromJsonAsync<RegisterUser>($"api/RegisterUsers/getUser/{Id}");
+
+        // You don't need to set the email in the form, because it's not displayed
+        if (user == null)
+        {
+            // Navigation.NavigateTo("/404"); // Redirect if user not found
+            Console.WriteLine("User not found");
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        // Manually check if the current password is empty and display validation message
+        if (string.IsNullOrWhiteSpace(newUserInfo.CurrentPassword))
+        {
+            // Use a validation message
+            // You can also add a custom message for better UX.
+            Console.WriteLine("Current Password is required.");
+            return;
+        }
+
+        try
+        {
+            // Send the update request to the backend API
+            var response = await Http.PutAsJsonAsync($"api/RegisterUsers/Update/{Id}", newUserInfo);
+
+            if (response.IsSuccessStatusCode)
+            {
+                // Handle success: Navigate or show success message
+                Navigation.NavigateTo("/News"); // Example: Navigate to profile page after success
+            }
+            else
+            {
+                // Handle failure (e.g., invalid current password)
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                // You can display this error message in the UI if needed
+                Message = errorMessage; // Or show an alert
+            }
+        }
+        catch (Exception ex)
+        {
+            // Handle any exceptions (e.g., network issues, etc.)
+            Console.WriteLine($"Error updating user info: {ex.Message}");
+        }
+    }
+
+
+
+
+
+}

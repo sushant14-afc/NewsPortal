@@ -1,0 +1,98 @@
+﻿@* @page "/testingdrop"
+@rendermode InteractiveServer
+@inject IJSRuntime JS
+
+
+<h3>Test Button</h3>
+
+<button>Click Me</button>
+
+<div class="dropdown">
+    <button @onclick="ToggleDropdown" class="dropdown-toggle">
+        Dropdown
+    </button> *@
+    @* @if (isOpen)
+    {
+        <div class="dropdown-menu">
+            <button class="dropdown-item">Action 1</button>
+            <button class="dropdown-item">Action 2</button>
+            <button class="dropdown-item">Action 3</button>
+        </div>
+    } *@
+
+   @*  <div class="dropdown-menu show">
+        <button class="dropdown-item">Action 1</button>
+        <button class="dropdown-item">Action 2</button>
+    </div>
+
+
+</div>
+ *@
+@* <style>
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    /* Style for the dropdown button */
+    .dropdown-toggle {
+        background-color: #007bff;
+        color: white;
+        border: 1px solid #007bff;
+        padding: 10px 15px;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    /* Style for the dropdown menu */
+    .dropdown-menu {
+        position: absolute;
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        margin-top: 5px;
+        width: 200px;
+        padding: 10px 0;
+        z-index: 1000; /* Ensures it stays on top */
+    }
+
+    /* Style for individual items */
+    .dropdown-item {
+        background: transparent;
+        border: none;
+        padding: 8px 15px;
+        width: 100%;
+        text-align: left;
+        cursor: pointer;
+        display: block;
+    }
+
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+</style>
+
+
+@code {
+
+    private bool isOpen = false;
+
+    private void ToggleDropdown()
+    {
+        JS.InvokeVoidAsync("console.log", "Dropdown Button Clicked");
+
+        isOpen = !isOpen;
+        StateHasChanged();  // Trigger re-render explicitly
+    }
+
+    // private void OnClickTest()
+    // {
+    //     JS.InvokeVoidAsync("console.log", "Dropdown Button Clicked");
+
+    //     Console.WriteLine("Button was clicked");
+    // }
+
+
+}
+ *@

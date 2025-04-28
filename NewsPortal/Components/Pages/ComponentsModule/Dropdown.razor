@@ -1,0 +1,76 @@
+﻿@* 
+@rendermode interactiveserver
+
+
+
+@code {
+    private bool isopen = false;
+
+    private void toggledropdown()
+    {
+        js.invokevoidasync("console.log", "dropdown button clicked");
+
+        isopen = !isopen;
+        statehaschanged();  // trigger re-render explicitly
+    }
+}
+
+<div class="dropdown">
+    <button @onclick="toggledropdown" class="dropdown-toggle">
+        dropdown
+    </button>
+    @if (isopen)
+    {
+        <div class="dropdown-menu">
+            <button class="dropdown-item">action 1</button>
+            <button class="dropdown-item">action 2</button>
+            <button class="dropdown-item">action 3</button>
+        </div>
+    }
+</div>
+
+<style>
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    /* style for the dropdown button */
+    .dropdown-toggle {
+        background-color: #007bff;
+        color: white;
+        border: 1px solid #007bff;
+        padding: 10px 15px;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    /* style for the dropdown menu */
+    .dropdown-menu {
+        position: absolute;
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        margin-top: 5px;
+        width: 200px;
+        padding: 10px 0;
+        z-index: 1000; /* ensures it stays on top */
+    }
+
+    /* style for individual items */
+    .dropdown-item {
+        background: transparent;
+        border: none;
+        padding: 8px 15px;
+        width: 100%;
+        text-align: left;
+        cursor: pointer;
+        display: block;
+    }
+
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+</style>
+ *@

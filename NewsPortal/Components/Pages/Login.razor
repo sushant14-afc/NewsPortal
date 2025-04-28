@@ -1,0 +1,121 @@
+﻿@page "/"
+@rendermode InteractiveServer
+@using NewsPortal.Application
+@using NewsPortal.Entity
+@using NewsPortal.DTOs
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@inject AppState AppState
+
+
+
+@* 
+<h3>Login</h3> *@
+
+@* <EditForm Model="@login" OnValidSubmit="HandleLogin">
+    <div class="form-group mt-3">
+        <label><b>Email :</b></label>
+        <InputText @bind-Value="login.Email" class="form-control" />
+    </div>
+
+    <div class="form-group mt-3">
+        <label><b>Password :</b></label>
+        <InputText @bind-Value="login.Password" type="password" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Login</button>
+
+    <p>@Message</p>
+
+
+</EditForm> *@
+
+<EditForm Model="@login" OnValidSubmit="HandleLogin">
+    <div class="container d-flex justify-content-center mt-5" >
+        <div class="card p-4 shadow-lg" style="max-width: 400px; width: 100%;">
+            <h3 class="text-center mb-4">Login</h3>
+
+            <div class="form-group">
+                <label for="email"><b>Email :</b></label>
+                <InputText id="email" @bind-Value="login.Email" class="form-control" placeholder="Enter your email" />
+            </div>
+
+            <div class="form-group mt-3">
+                <label for="password"><b>Password :</b></label>
+                <InputText id="password" @bind-Value="login.Password" type="password" class="form-control" placeholder="Enter your password" />
+            </div>
+
+
+
+            <button type="submit" class="btn btn-primary mt-4 w-100" disabled="@IsLoggingIn">
+
+                @if (IsLoggingIn)
+                {
+                    <span>
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Logging in...
+                    </span>
+                }
+                else
+                {
+                    <span>Login</span>
+                }
+            </button>
+
+
+
+
+
+            @if (!string.IsNullOrEmpty(Message))
+            {
+                <p class="text-center text-danger mt-3">@Message</p>
+            }
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    private LoginDtos login = new();
+    private string Message;
+
+    private bool IsLoggingIn = false;
+
+
+    private async Task HandleLogin()
+    {
+
+        IsLoggingIn = true; // Start spinner as soon as login starts
+        Message = string.Empty;
+
+        try
+        {
+            var res = await Http.PostAsJsonAsync("api/Login/loginUser", login);
+
+            if (res.IsSuccessStatusCode)
+            {
+                var user = await res.Content.ReadFromJsonAsync<RegisterUser>();
+
+                // AppState.Login(login.Email);
+                AppState.Login(user);
+                await Task.Delay(2000);      // Optional delay for UX
+                Navigation.NavigateTo("/News");  // Redirect after login
+            }
+            else
+            {
+                var error = await res.Content.ReadAsStringAsync();
+                Message = error;
+            }
+        }
+        catch (Exception ex)
+        {
+            Message = $"Something went wrong: {ex.Message}";
+        }
+        finally
+        {
+            IsLoggingIn = false; // Stop spinner whether login fails or succeeds
+        }
+        
+    }
+
+    
+}
