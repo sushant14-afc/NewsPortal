@@ -13,7 +13,6 @@ namespace NewsPortal.Entity
         
         public NewsCategoryEnum? Category { get; set; }
 
-        
         public string? Description { get; set; }
 
         

@@ -1,0 +1,135 @@
+﻿@page "/AddCategories"
+@rendermode InteractiveServer
+@using NewsPortal.Entity
+@inject HttpClient _http
+
+
+
+<h3>Categories</h3>
+
+<EditForm Model="@category" OnValidSubmit="CreateCategory">
+    <div>
+        <label><b>Category Name</b></label>
+        <input type="text" @bind="category.CategoryName" class="form-control" required />
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Add Category</button>
+
+    @if (!string.IsNullOrEmpty(successMessage))
+    {
+        <div class="alert alert-success mt-3">
+            @successMessage
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger mt-3">
+            @errorMessage
+        </div>
+    }
+</EditForm>
+
+<div class="container mt-5">
+    <h2 class="text-center">Categories List</h2>
+
+    @if (categories == null)
+    {
+        <div class="alert alert-info">Loading categories...</div>
+    }
+    else if (categories.Any())
+    {
+        <table class="table table-bordered mt-3">
+            <thead>
+                <tr>
+                    <th>Category Name</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var category in categories)
+                {
+                    <tr>
+                        <td>@category.CategoryName</td>
+                        <td>
+                            <!-- Edit Button -->
+                            <a class="btn btn-primary" href="/editCategories/@category.Id">Edit</a>
+
+                            <!-- Delete Button -->
+                            <button class="btn btn-danger" @onclick="() => DeleteCategory(category.Id)">Delete</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-warning">No categories found.</div>
+    }
+</div>
+
+
+
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Category category = new();
+
+    private string successMessage;
+
+    private string errorMessage;
+
+    private List<Category> categories;
+
+    private async Task CreateCategory()
+    {
+        var response = await _http.PostAsJsonAsync<Category>("api/Categories/CreateCategory", category);
+
+        if(response.IsSuccessStatusCode)
+        {
+            successMessage = await response.Content.ReadAsStringAsync();
+            await LoadCategories();
+        }
+        else
+        {
+            errorMessage = await response.Content.ReadAsStringAsync();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCategories();
+    }  
+
+    private async Task LoadCategories()
+    {
+        var response = await _http.GetFromJsonAsync<List<Category>>("api/Categories/GetCategories");
+
+        if (response != null)
+        {
+            categories = response;  // Update the categories list
+        }
+
+        // Ensure UI is updated after data change
+        StateHasChanged();
+    }
+
+
+    private async Task DeleteCategory(int id)
+    {
+        var res = await _http.DeleteAsync($"api/Categories/DelCategory/{id}");
+
+        if(res.IsSuccessStatusCode)
+        {
+            successMessage = await res.Content.ReadAsStringAsync();
+            await LoadCategories();
+        }
+        else
+        {
+            errorMessage = await res.Content.ReadAsStringAsync();
+        }
+    }
+}

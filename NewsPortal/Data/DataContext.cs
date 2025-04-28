@@ -15,5 +15,7 @@ namespace NewsPortal.Data
         public DbSet<Test> Tests { get; set; }
 
         public DbSet<RegisterUser> RegisterUsers { get; set; }
+
+        public DbSet<Category> Categories { get; set; }
     }
 }

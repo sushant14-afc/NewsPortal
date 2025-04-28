@@ -1,0 +1,70 @@
+﻿@page "/editCategories/{Id:int}"
+@using NewsPortal.Entity
+@rendermode InteractiveServer
+@inject HttpClient _http
+@inject NavigationManager Navigation
+
+
+<h3>Edit Category</h3>
+
+@if(_category == null)
+{
+    <p>Loading.....</p>
+}
+else
+{
+    <EditForm Model="@_category" OnValidSubmit="EditCategory">
+        <div>
+            <label><b>Category Name</b></label>
+            <input type="text" @bind="_category.CategoryName" class="form-control" required />
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-3">Update Category</button>
+
+        @if (!string.IsNullOrEmpty(successMessage))
+        {
+            <div class="alert alert-success mt-3">
+                @successMessage
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert alert-danger mt-3">
+                @errorMessage
+            </div>
+        }
+    </EditForm>
+}
+
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Category _category;
+
+    private string successMessage;
+
+    private string errorMessage;
+
+    private async Task EditCategory()
+    {
+        var response = await _http.PutAsJsonAsync($"api/Categories/Edit/{Id}", _category);
+
+        if (response.IsSuccessStatusCode)
+        {
+            // successMessage = await response.Content.ReadAsStringAsync();
+            Navigation.NavigateTo("/AddCategories");
+        }
+        else
+        {
+            errorMessage = await response.Content.ReadAsStringAsync();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _category = await _http.GetFromJsonAsync<Category>($"api/Categories/Category/{Id}");
+    }
+}
