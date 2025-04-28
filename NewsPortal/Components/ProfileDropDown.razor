@@ -9,9 +9,6 @@
 
 
 <div class="dropdown">
-    @* <button class="dropdown-toggle" @onclick="ToggleDropdown">
-       @(string.IsNullOrEmpty(AppState.UserEmail) ? "Guest" : AppState.UserEmail.Split('@')[0])
-    </button> *@
     <button class="dropdown-toggle" @onclick="ToggleDropdown">
         @(AppState.IsLoggedIn && AppState.currentUser != null
                 ? AppState.currentUser.Email.Split('@')[0]
@@ -28,30 +25,15 @@
                     Update Info
                 </button>
             }
-            <button class="dropdown-item">Item 2</button>
             <a class="dropdown-item logbtn">
                 <NewsPortal.Components.Pages.LogOut />
-                @*  Item 3 *@
             </a>
         </div>
-        
-        @* <div class="dropdown-menu show">
-            @*<button class="dropdown-item">Update Info</button>*@  
-           @* <button class="dropdown-item" @onclick="() => NavigateToEdit(AppState.currentUser?.Id)">
-                    Update Info
-           </button>
-           <button class="dropdown-item">Item 2</button>
-           <a class="dropdown-item logbtn">
-                    <NewsPortal.Components.Pages.LogOut />
-           </a> *@
-       @* </div> *@
         
 
     }
 
 </div>
-
-@* custom-logout-item *@
 
 <style>
     .logbtn {
