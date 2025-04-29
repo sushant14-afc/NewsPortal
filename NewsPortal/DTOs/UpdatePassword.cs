@@ -1,11 +1,9 @@
 ﻿namespace NewsPortal.DTOs
 {
-    public class UpdateInfo
+    public class UpdatePassword
     {
         public string CurrentPassword { get; set; }
-
         public string NewPassword { get; set; }
-
-        public string Email { get; set; }
+        public string ReEnterPassword { get; set; }
     }
 }

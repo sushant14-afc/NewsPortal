@@ -1,0 +1,156 @@
+﻿@page "/UpdateUser/{Id:int}"
+@rendermode InteractiveServer
+@using NewsPortal.Application
+@using NewsPortal.DTOs
+@using NewsPortal.Entity
+@inject HttpClient _http
+@inject NavigationManager Navigation
+@inject AppState AppState
+
+
+
+<h3 class="text-center">Update User Data</h3>
+<div class="border rounded p-3 mb-4">
+    @if (!AppState.IsLoggedIn)
+    {
+        <p>Page not found.</p>
+    }
+    else if (_currentUser == null)
+    {
+        < p > Loading user data...</ p >
+    }
+    else
+    {
+        <!-- Show current email (read-only) -->
+        <div class="border rounded p-3 mb-4">
+            <label class="form-label"><b>Current Email</b></label>
+            <input type="email" class="form-control" value="@_currentUser.Email" readonly />
+        </div>
+
+        <!-- Updating Email -->
+        <h3 class="text-center">Change Email</h3>
+        <EditForm class="border rounded p-3 mb-4" Model="@_updateEmailData" OnValidSubmit="UpdateEmail">
+            <div class="mb-4">
+                <label for="email" class="form-label">New Email</label>
+                <input type="email" class="form-control" id="email" @bind="_updateEmailData.Email" placeholder="Enter new email" />
+            </div>
+
+            <div class="mb-4">
+                <label>Current Password</label>
+                <input type="password" class="form-control" @bind="_updateEmailData.CurrentPassword" placeholder="Enter current password" />
+            </div>
+
+            @if (!string.IsNullOrEmpty(successMessageForEmail))
+            {
+                <p class="text-center text-danger mt-3">@successMessageForEmail</p>
+            }
+
+            @if (!string.IsNullOrEmpty(errorMessageForEmail))
+            {
+                <p class="text-center text-danger mt-3">@errorMessageForEmail</p>
+            }
+
+            <button type="submit" class="btn btn-primary">Update Email</button>
+
+
+
+        </EditForm>
+
+
+        <!-- Updating Password -->
+        <h3 class="text-center">Change Password</h3>
+
+        <EditForm class="border rounded p-3 mb-4" Model="@_updatePasswordData" OnValidSubmit="UpdatePassword">
+            <!-- Current Password Field -->
+            <div class="mb-4">
+                <label for="currentPassword" class="form-label">Current Password</label>
+                <input type="password" class="form-control" id="currentPassword" @bind="_updatePasswordData.CurrentPassword" placeholder="Enter current password" />
+            </div>
+
+            <!-- New Password Field -->
+            <div class="mb-4">
+                <label for="newPassword" class="form-label">New Password</label>
+                <input type="password" class="form-control" id="newPassword" @bind="_updatePasswordData.NewPassword" placeholder="Enter a new password" />
+            </div>
+
+            <!-- ReEnter New Password Field -->
+            <div class="mb-4">
+                <label for="newPassword" class="form-label">Re-Enter New Password</label>
+                <input type="password" class="form-control" id="newPassword" @bind="_updatePasswordData.ReEnterPassword" placeholder="Re-Enter new password" />
+            </div>
+
+            @if (!string.IsNullOrEmpty(successMessageForPassword))
+            {
+                <p class="text-center text-danger mt-3">@successMessageForPassword</p>
+            }
+
+            @if (!string.IsNullOrEmpty(errorMessageForPassword))
+            {
+                <p class="text-center text-danger mt-3">@errorMessageForPassword</p>
+            }
+
+            <button type="submit" class="btn btn-primary">Update Password</button>
+
+
+
+        </EditForm>
+    }
+</div>
+
+
+
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private RegisterUser _currentUser;
+
+    private UpdateEmail _updateEmailData = new();
+
+    private UpdatePassword _updatePasswordData = new();
+
+    private string errorMessageForEmail;
+
+    private string successMessageForEmail;
+
+    private string errorMessageForPassword;
+
+    private string successMessageForPassword;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _currentUser = await _http.GetFromJsonAsync<RegisterUser>($"api/RegisterUsers/getUser/{Id}");
+    }
+
+    //Email
+    private async Task UpdateEmail()
+    {
+        var res = await _http.PutAsJsonAsync($"api/RegisterUsers/UpdateEmail/{Id}", _updateEmailData);
+        if (res.IsSuccessStatusCode)
+        {
+            successMessageForEmail = await res.Content.ReadAsStringAsync();
+            Navigation.NavigateTo("/News");
+        }
+        else
+        {
+            errorMessageForEmail = await res.Content.ReadAsStringAsync();
+        }
+    }
+
+    //Password
+    private async Task UpdatePassword()
+    {
+        var res = await _http.PutAsJsonAsync($"api/RegisterUsers/UpdatePassword/{Id}", _updatePasswordData);
+        if (res.IsSuccessStatusCode)
+        {
+            successMessageForPassword = await res.Content.ReadAsStringAsync();
+            Navigation.NavigateTo("/News");
+        }
+        else
+        {
+            errorMessageForPassword = await res.Content.ReadAsStringAsync();
+        }
+    }
+
+}
