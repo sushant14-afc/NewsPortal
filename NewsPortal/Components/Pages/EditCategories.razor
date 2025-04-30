@@ -5,36 +5,40 @@
 @inject NavigationManager Navigation
 
 
-<h3>Edit Category</h3>
-
 @if(_category == null)
 {
     <p>Loading.....</p>
 }
 else
 {
-    <EditForm Model="@_category" OnValidSubmit="EditCategory">
-        <div>
-            <label><b>Category Name</b></label>
-            <input type="text" @bind="_category.CategoryName" class="form-control" required />
+    <div class="container d-flex justify-content-center mt-5">
+        <div class="card shadow p-4" style="width: 30rem; border-radius: 1rem;">
+            <h4 class="text-center mb-4">Edit Category</h4>
+
+            <EditForm Model="_category" OnValidSubmit="EditCategory">
+                <div class="form-group">
+                    <label for="categoryName"><b>Category Name</b></label>
+                    <input type="text" id="categoryName" @bind="_category.CategoryName" class="form-control" required />
+                </div>
+
+                <button type="submit" class="btn btn-primary mt-4 w-100">Update Category</button>
+            </EditForm>
+
+            @if (!string.IsNullOrEmpty(successMessage))
+            {
+                <div class="alert alert-success mt-3">
+                    @successMessage
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger mt-3">
+                    @errorMessage
+                </div>
+            }
         </div>
-
-        <button type="submit" class="btn btn-primary mt-3">Update Category</button>
-
-        @if (!string.IsNullOrEmpty(successMessage))
-        {
-            <div class="alert alert-success mt-3">
-                @successMessage
-            </div>
-        }
-
-        @if (!string.IsNullOrEmpty(errorMessage))
-        {
-            <div class="alert alert-danger mt-3">
-                @errorMessage
-            </div>
-        }
-    </EditForm>
+    </div>
 }
 
 
@@ -54,7 +58,6 @@ else
 
         if (response.IsSuccessStatusCode)
         {
-            // successMessage = await response.Content.ReadAsStringAsync();
             Navigation.NavigateTo("/AddCategories");
         }
         else

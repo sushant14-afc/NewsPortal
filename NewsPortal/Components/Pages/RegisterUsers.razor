@@ -3,37 +3,49 @@
 @using NewsPortal.DTOs
 @inject HttpClient Http
 
-
-
-
-<h3 class="text-center">Register User</h3>
+<PageTitle>Register</PageTitle>
 
 <EditForm Model="@registerUser" OnValidSubmit="HandleRegister">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
-    <div class="form-group mt-3">
-        <label><b>Email :</b></label>
-        <InputText @bind-Value="registerUser.Email" class="form-control" />
+    <div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+        <div class="card shadow-lg border-0 rounded-4 p-4" style="max-width: 450px; width: 100%;">
+            <div class="text-center mb-4">
+                <i class="bi bi-person-plus text-success" style="font-size: 3rem;"></i>
+                <h3 class="fw-bold mt-2">Create Account</h3>
+                <p class="text-muted">Register to publish and manage news</p>
+            </div>
+
+            <div class="form-group mb-3">
+                <label class="form-label"><b>Email</b></label>
+                <InputText @bind-Value="registerUser.Email" class="form-control" placeholder="Enter your email" />
+            </div>
+
+            <div class="form-group mb-3">
+                <label class="form-label"><b>Password</b></label>
+                <InputText @bind-Value="registerUser.Password" type="password" class="form-control" placeholder="Enter a password" />
+            </div>
+
+            <div class="form-group mb-4">
+                <label class="form-label"><b>Confirm Password</b></label>
+                <InputText @bind-Value="registerUser.ConfirmPassword" type="password" class="form-control" placeholder="Confirm your password" />
+            </div>
+
+            <button type="submit" class="btn btn-success w-100">Register</button>
+
+            @if (!string.IsNullOrEmpty(Message))
+            {
+                <div class="alert alert-danger mt-4 text-center">@Message</div>
+            }
+
+            <div class="text-center mt-3">
+                <small class="text-muted">Already have an account? <a href="/">Login here</a></small>
+            </div>
+        </div>
     </div>
-
-    <div class="form-group mt-3">
-        <label><b>Password :</b></label>
-        <InputText @bind-Value="registerUser.Password" type="password" class="form-control" />
-    </div>
-
-    <div class="form-group mt-3">
-        <label><b>Confirm Password :</b></label>
-        <InputText @bind-Value="registerUser.ConfirmPassword" type="password" class="form-control" />
-    </div>
-
-    <button type="submit" class="btn btn-primary mt-3">Register</button>
-
-    @if (!string.IsNullOrEmpty(Message))
-    {
-        <div class="alert alert-danger mt-5">@Message</div>
-    }
 </EditForm>
+
 
 @code {
     private RegisterUserDtos registerUser = new();

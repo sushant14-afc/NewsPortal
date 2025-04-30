@@ -4,34 +4,37 @@
 @inject HttpClient _http
 
 
+<div class="container d-flex justify-content-center mt-5">
+    <div class="card shadow p-4" style="width: 30rem; border-radius: 1rem;">
+        <h4 class="text-center mb-4">Add New Category</h4>
 
-<h3>Categories</h3>
+        <EditForm Model="category" OnValidSubmit="CreateCategory">
+            <div class="form-group">
+                <label for="categoryName"><b>Category Name</b></label>
+                <input type="text" id="categoryName" @bind="category.CategoryName" class="form-control" required />
+            </div>
 
-<EditForm Model="@category" OnValidSubmit="CreateCategory">
-    <div>
-        <label><b>Category Name</b></label>
-        <input type="text" @bind="category.CategoryName" class="form-control" required />
+            <button type="submit" class="btn btn-primary mt-4 w-100">Add Category</button>
+        </EditForm>
+
+        @if (!string.IsNullOrEmpty(successMessageForCreate))
+        {
+            <div class="alert alert-success mt-3">
+                @successMessageForCreate
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(errorMessageForError))
+        {
+            <div class="alert alert-danger mt-3">
+                @errorMessageForError
+            </div>
+        }
     </div>
+</div>
 
-    <button type="submit" class="btn btn-primary mt-3">Add Category</button>
-
-    @if (!string.IsNullOrEmpty(successMessage))
-    {
-        <div class="alert alert-success mt-3">
-            @successMessage
-        </div>
-    }
-
-    @if (!string.IsNullOrEmpty(errorMessage))
-    {
-        <div class="alert alert-danger mt-3">
-            @errorMessage
-        </div>
-    }
-</EditForm>
 
 <div class="container mt-5">
-    <h2 class="text-center">Categories List</h2>
 
     @if (categories == null)
     {
@@ -39,29 +42,47 @@
     }
     else if (categories.Any())
     {
-        <table class="table table-bordered mt-3">
-            <thead>
-                <tr>
-                    <th>Category Name</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var category in categories)
-                {
-                    <tr>
-                        <td>@category.CategoryName</td>
-                        <td>
-                            <!-- Edit Button -->
-                            <a class="btn btn-primary" href="/editCategories/@category.Id">Edit</a>
+        <div class="container mt-5" style="background-color: #f8f9fa; padding: 2rem; border-radius: 1rem; box-shadow: 0 0 15px rgba(0,0,0,0.1);">
+            <h3 class="mb-4 text-center">Manage Categories</h3>
 
-                            <!-- Delete Button -->
-                            <button class="btn btn-danger" @onclick="() => DeleteCategory(category.Id)">Delete</button>
-                        </td>
+            <table class="table table-hover table-striped table-bordered rounded">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Category Name</th>
+                        <th style="width: 200px;">Actions</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var category in categories)
+                    {
+                        <tr>
+                            <td class="align-middle">@category.CategoryName</td>
+                            <td class="align-middle">
+                                <a class="btn btn-sm btn-outline-primary me-2" href="/editCategories/@category.Id">
+                                    <i class="bi bi-pencil-square"></i> Edit
+                                </a>
+                                <button class="btn btn-sm btn-outline-danger" @onclick="() => DeleteCategory(category.Id)">
+                                    <i class="bi bi-trash"></i> Delete
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            @if (!string.IsNullOrEmpty(successMessageForCategory))
+            {
+                <div class="alert alert-success mt-3">
+                    @successMessageForCategory
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(errorMessageForCategory))
+            {
+                <div class="alert alert-danger mt-3">
+                    @errorMessageForCategory
+                </div>
+            }
+        </div>
     }
     else
     {
@@ -78,9 +99,13 @@
 
     private Category category = new();
 
-    private string successMessage;
+    private string successMessageForCreate;
 
-    private string errorMessage;
+    private string errorMessageForError;
+
+    private string successMessageForCategory;
+
+    private string errorMessageForCategory;
 
     private List<Category> categories;
 
@@ -90,12 +115,12 @@
 
         if(response.IsSuccessStatusCode)
         {
-            successMessage = await response.Content.ReadAsStringAsync();
+            successMessageForCreate = await response.Content.ReadAsStringAsync();
             await LoadCategories();
         }
         else
         {
-            errorMessage = await response.Content.ReadAsStringAsync();
+            errorMessageForError = await response.Content.ReadAsStringAsync();
         }
     }
 
@@ -124,12 +149,12 @@
 
         if(res.IsSuccessStatusCode)
         {
-            successMessage = await res.Content.ReadAsStringAsync();
+            successMessageForCategory = await res.Content.ReadAsStringAsync();
             await LoadCategories();
         }
         else
         {
-            errorMessage = await res.Content.ReadAsStringAsync();
+            errorMessageForCategory = await res.Content.ReadAsStringAsync();
         }
     }
 }

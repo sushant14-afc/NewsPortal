@@ -23,34 +23,21 @@ namespace NewsPortal.Controller
         [HttpPost("create_news")]
         public async Task<IActionResult> AddNews([FromBody] NewsEntity news)
         {
+            news.Category = null;
             _context.News.Add(news);
             await _context.SaveChangesAsync();
             return StatusCode(201, news);
+
         }
-
-        //[HttpPost("create_news")]
-        //public async Task<IActionResult> AddNews([FromBody] NewsModel newsModel)
-        //{
-        //    var news = new NewsEntity
-        //    {
-        //        Title = newsModel.Title,
-        //        Category = newsModel.Category,
-        //        Description = newsModel.Description,
-        //        ImageUrl = newsModel.ImageUrl
-        //    };
-
-        //    _context.News.Add(news);
-        //    await _context.SaveChangesAsync();
-
-        //    return StatusCode(201, news);
-        //}
-
 
         [HttpGet("all_news")]
         public async Task<IActionResult> GetAllNews()
         {
-            var allnews = await _context.News.ToListAsync();
-            return Ok(allnews);
+            var allNews = await _context.News
+                                        .Include(news => news.Category)  
+                                        .ToListAsync();
+
+            return Ok(allNews);
         }
 
         [HttpPut("edit/{id}")]
@@ -66,7 +53,11 @@ namespace NewsPortal.Controller
             if (editNews.Title != null) existingNews.Title = editNews.Title;
             if (editNews.Description != null) existingNews.Description = editNews.Description;
             if (editNews.ImageUrl != null) existingNews.ImageUrl = editNews.ImageUrl;
-            if (editNews.Category.HasValue) existingNews.Category = editNews.Category.Value;
+            //if (editNews.Category.HasValue) existingNews.Category = editNews.Category.Value;
+            if (editNews.CategoryId.HasValue)
+            {
+                existingNews.CategoryId = editNews.CategoryId.Value;
+            }
 
 
             await _context.SaveChangesAsync();
