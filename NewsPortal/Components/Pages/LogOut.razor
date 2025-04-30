@@ -7,7 +7,7 @@
 @if (isLoading)
 {
     
-        <div class="d-flex align-items-center">
+    <div class="d-flex align-items-center">
        @*  <div class="spinner-border text-primary" role="status">
             <span class="visually-hidden">Logging out...</span>
         </div> *@
@@ -16,40 +16,10 @@
 }
 else
 {
-    <a class ="bi bi-box-arrow-right" @onclick ="Logout">Logout</a>
+    <a @onclick ="Logout">Logout</a>
     @*class="btn btn-link"*@
 }
 
-
-@* <style>
-    .dropdown-item {
-        width: 100%;
-        padding: 8px 12px;
-        text-align: left;
-        background: none;
-        border: none;
-        cursor: pointer;
-        display: block;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    /* Styling for the Logout button */
-    .logout-btn {
-        width: 100%;
-        padding: 8px 12px;
-        text-align: left;
-        background: none;
-        border: none;
-        font-size: 1rem; /* Same font size as other items */
-        cursor: pointer;
-        display: block;
-    }
-
-        .logout-btn:hover {
-            background-color: #f8f9fa; /* Same hover effect */
-        }
-</style> *@
 
 @code {
 

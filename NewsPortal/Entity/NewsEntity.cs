@@ -10,8 +10,12 @@ namespace NewsPortal.Entity
         
         public string? Title { get; set; } 
 
-        
-        public NewsCategoryEnum? Category { get; set; }
+       
+        // This is foreign key
+        public int? CategoryId { get; set; }
+
+        // Navigation property
+        public Category? Category { get; set; }
 
         public string? Description { get; set; }
 

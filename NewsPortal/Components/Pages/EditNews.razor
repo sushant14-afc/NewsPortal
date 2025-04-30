@@ -7,8 +7,6 @@
 @inject NavigationManager Navigation
 
 
-<h3 class="text-center">Edit News</h3>
-
 @if(news == null)
 {
     <p><em>Loading...</em></p>
@@ -17,53 +15,61 @@ else
 {
     <form @onsubmit="UpdateNews">
 
-        <div>
-            <label><b>Title: *</b></label>
-            <input type="text" @bind="news.Title" class="form-control" required />
-        </div>
+        <div class="container d-flex justify-content-center align-items-center py-5" style="min-height: 100vh; background-color: #f5f7fa;">
+            <div class="card shadow-lg p-5 w-100" style="max-width: 700px; border-radius: 1rem;">
+                <h3 class="text-center mb-4">Edit News Article</h3>
 
-        <div>
-            <label class="mt-3"><b>Category: *</b></label>
-            <select @bind="news.Category" class="form-control" required>
-                <option value="">-- Select Category --</option>
-                @foreach (var category in Enum.GetValues(typeof(NewsCategoryEnum)))
-                {
-                    <option value="@category">@category</option>
-                }
-            </select>
-        </div>
+                <EditForm Model="news" OnValidSubmit="UpdateNews">
+                    <div class="form-group mb-3">
+                        <label for="title"><strong>Title *</strong></label>
+                        <input type="text" id="title" @bind="news.Title" class="form-control" required />
+                    </div>
 
-        <div>
-            <label class="mt-3"><b>Description: *</b></label>
-            <textarea @bind="news.Description" class="form-control" required></textarea>
-        </div>
+                    <div class="form-group mb-3">
+                        <label for="category"><strong>Category *</strong></label>
+                        <select id="category" @bind="news.CategoryId" class="form-control" required>
+                            <option value="">-- Select Category --</option>
+                            @foreach (var category in _categoryList)
+                            {
+                                <option value="@category.Id">@category.CategoryName</option>
+                            }
+                        </select>
+                    </div>
 
-        @if (!string.IsNullOrEmpty(news.ImageUrl))
-        {
-            <div class="mt-3">
-                <img src="@news.ImageUrl" alt="Current Image" class="img-thumbnail" style="max-height: 200px; object-fit: cover;" />
-                <p><em>Click below to update the image</em></p>
+                    <div class="form-group mb-3">
+                        <label for="description"><strong>Description *</strong></label>
+                        <textarea id="description" @bind="news.Description" class="form-control" rows="4" required></textarea>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(news.ImageUrl))
+                    {
+                        <div class="mb-3 text-center">
+                            <img src="@news.ImageUrl" alt="Current Image" class="img-fluid rounded shadow-sm mb-2" style="max-height: 200px; object-fit: cover;" />
+                            <p class="text-muted"><em>Click below to update the image</em></p>
+                        </div>
+                    }
+
+                    <div class="form-group mb-4">
+                        <label for="image"><strong>Image *</strong></label>
+                        <InputFile id="image" OnChange="HandleFileChange" required="@string.IsNullOrEmpty(news.ImageUrl)" class="form-control" />
+                    </div>
+
+                    <button type="submit" class="btn btn-success w-100">
+                        @if (isUpdating)
+                        {
+                            <span>
+                                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                Updating...
+                            </span>
+                        }
+                        else
+                        {
+                            <span>Update News</span>
+                        }
+                    </button>
+                </EditForm>
             </div>
-        }
-
-        <div>
-            <label class="mt-1"><b>Image: *</b></label>
-            <InputFile OnChange="HandleFileChange" required="@string.IsNullOrEmpty(news.ImageUrl)" />
         </div>
-
-        <button type="submit" class="btn btn-success mt-3">
-            @if (isUpdating)
-            {
-                <span>
-                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                    Updating...
-                </span>
-            }
-            else
-            {
-                <span>Update</span>
-            }
-        </button>
 
     </form>
 }
@@ -74,6 +80,9 @@ else
     public int Id{ get; set; }
 
     private NewsEntity news;
+
+    private List<Category> _categoryList = new();
+
 
     private bool isUpdating = false;
 
@@ -126,6 +135,8 @@ else
     protected override async Task OnInitializedAsync()
     {
         news = await _http.GetFromJsonAsync<NewsEntity>($"api/News/{Id}");
+        _categoryList = await _http.GetFromJsonAsync<List<Category>>("/api/Categories/GetCategories");
+
     }
 
 }

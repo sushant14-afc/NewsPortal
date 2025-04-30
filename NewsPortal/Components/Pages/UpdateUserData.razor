@@ -8,8 +8,6 @@
 @inject AppState AppState
 
 
-
-<h3 class="text-center">Update User Data</h3>
 <div class="border rounded p-3 mb-4">
     @if (!AppState.IsLoggedIn)
     {
@@ -21,79 +19,102 @@
     }
     else
     {
-        <!-- Show current email (read-only) -->
-        <div class="border rounded p-3 mb-4">
-            <label class="form-label"><b>Current Email</b></label>
-            <input type="email" class="form-control" value="@_currentUser.Email" readonly />
+        <div class="container my-4">
+            <div class="card shadow-sm mx-auto" style="max-width: 32rem; border-radius: 0.75rem;">
+                <div class="card-body">
+                    <h5 class="card-title mb-3 text-center">Your Account</h5>
+
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Email Address</strong></label>
+                        <input type="email" class="form-control bg-light" value="@_currentUser.Email" readonly />
+                    </div>
+                </div>
+            </div>
         </div>
 
+
         <!-- Updating Email -->
-        <h3 class="text-center">Change Email</h3>
-        <EditForm class="border rounded p-3 mb-4" Model="@_updateEmailData" OnValidSubmit="UpdateEmail">
-            <div class="mb-4">
-                <label for="email" class="form-label">New Email</label>
-                <input type="email" class="form-control" id="email" @bind="_updateEmailData.Email" placeholder="Enter new email" />
+        <div class="container my-4">
+            <div class="card shadow-sm mx-auto" style="max-width: 32rem; border-radius: 0.75rem;">
+                <div class="card-body p-4">
+                    <h4 class="card-title text-center mb-4">Change Email</h4>
+
+                    <EditForm Model="@_updateEmailData" OnValidSubmit="UpdateEmail">
+                        <div class="mb-3">
+                            <label for="email" class="form-label"><strong>New Email</strong></label>
+                            <input type="email" class="form-control" id="email" @bind="_updateEmailData.Email" placeholder="Enter new email" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label"><strong>Current Password</strong></label>
+                            <input type="password" class="form-control" id="password" @bind="_updateEmailData.CurrentPassword" placeholder="Enter current password" required />
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(successMessageForEmail))
+                        {
+                            <div class="alert alert-success text-center mt-3" role="alert">
+                                @successMessageForEmail
+                            </div>
+                        }
+
+                        @if (!string.IsNullOrEmpty(errorMessageForEmail))
+                        {
+                            <div class="alert alert-danger text-center mt-3" role="alert">
+                                @errorMessageForEmail
+                            </div>
+                        }
+
+                        <button type="submit" class="btn btn-primary w-100 mt-3">Update Email</button>
+                    </EditForm>
+                </div>
             </div>
-
-            <div class="mb-4">
-                <label>Current Password</label>
-                <input type="password" class="form-control" @bind="_updateEmailData.CurrentPassword" placeholder="Enter current password" />
-            </div>
-
-            @if (!string.IsNullOrEmpty(successMessageForEmail))
-            {
-                <p class="text-center text-danger mt-3">@successMessageForEmail</p>
-            }
-
-            @if (!string.IsNullOrEmpty(errorMessageForEmail))
-            {
-                <p class="text-center text-danger mt-3">@errorMessageForEmail</p>
-            }
-
-            <button type="submit" class="btn btn-primary">Update Email</button>
-
-
-
-        </EditForm>
-
+        </div>
 
         <!-- Updating Password -->
-        <h3 class="text-center">Change Password</h3>
+        <div class="container my-4">
+            <div class="card shadow-sm mx-auto" style="max-width: 32rem; border-radius: 0.75rem;">
+                <div class="card-body p-4">
+                    <h4 class="card-title text-center mb-4">Change Password</h4>
 
-        <EditForm class="border rounded p-3 mb-4" Model="@_updatePasswordData" OnValidSubmit="UpdatePassword">
-            <!-- Current Password Field -->
-            <div class="mb-4">
-                <label for="currentPassword" class="form-label">Current Password</label>
-                <input type="password" class="form-control" id="currentPassword" @bind="_updatePasswordData.CurrentPassword" placeholder="Enter current password" />
+                    <EditForm Model="@_updatePasswordData" OnValidSubmit="UpdatePassword">
+                        <!-- Current Password -->
+                        <div class="mb-3">
+                            <label for="currentPassword" class="form-label"><strong>Current Password</strong></label>
+                            <input type="password" class="form-control" id="currentPassword" @bind="_updatePasswordData.CurrentPassword" placeholder="Enter current password" required />
+                        </div>
+
+                        <!-- New Password -->
+                        <div class="mb-3">
+                            <label for="newPassword" class="form-label"><strong>New Password</strong></label>
+                            <input type="password" class="form-control" id="newPassword" @bind="_updatePasswordData.NewPassword" placeholder="Enter new password" required />
+                        </div>
+
+                        <!-- Re-Enter New Password -->
+                        <div class="mb-3">
+                            <label for="reenterPassword" class="form-label"><strong>Re-enter New Password</strong></label>
+                            <input type="password" class="form-control" id="reenterPassword" @bind="_updatePasswordData.ReEnterPassword" placeholder="Re-enter new password" required />
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(successMessageForPassword))
+                        {
+                            <div class="alert alert-success text-center mt-3" role="alert">
+                                @successMessageForPassword
+                            </div>
+                        }
+
+                        @if (!string.IsNullOrEmpty(errorMessageForPassword))
+                        {
+                            <div class="alert alert-danger text-center mt-3" role="alert">
+                                @errorMessageForPassword
+                            </div>
+                        }
+
+                        <button type="submit" class="btn btn-primary w-100 mt-3">Update Password</button>
+                    </EditForm>
+                </div>
             </div>
+        </div>
 
-            <!-- New Password Field -->
-            <div class="mb-4">
-                <label for="newPassword" class="form-label">New Password</label>
-                <input type="password" class="form-control" id="newPassword" @bind="_updatePasswordData.NewPassword" placeholder="Enter a new password" />
-            </div>
-
-            <!-- ReEnter New Password Field -->
-            <div class="mb-4">
-                <label for="newPassword" class="form-label">Re-Enter New Password</label>
-                <input type="password" class="form-control" id="newPassword" @bind="_updatePasswordData.ReEnterPassword" placeholder="Re-Enter new password" />
-            </div>
-
-            @if (!string.IsNullOrEmpty(successMessageForPassword))
-            {
-                <p class="text-center text-danger mt-3">@successMessageForPassword</p>
-            }
-
-            @if (!string.IsNullOrEmpty(errorMessageForPassword))
-            {
-                <p class="text-center text-danger mt-3">@errorMessageForPassword</p>
-            }
-
-            <button type="submit" class="btn btn-primary">Update Password</button>
-
-
-
-        </EditForm>
     }
 </div>
 
