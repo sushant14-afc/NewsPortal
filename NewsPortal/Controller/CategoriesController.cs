@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NewsPortal.Data;
+using NewsPortal.DTOs;
 using NewsPortal.Entity;
 
 namespace NewsPortal.Controller
@@ -96,5 +97,46 @@ namespace NewsPortal.Controller
             return Ok(categoryByID);
 
         }
+
+        [HttpGet("newsByCategory")]
+        public async Task<IActionResult> GetNewsCountByCategory()
+        {
+            var newsCountByCategory = await _context.News
+                                                    .Include(news => news.Category) // This line ensures the Category is loaded
+                                                    .Where(news => news.Category != null)
+                                                    .GroupBy(news => news.Category!.CategoryName)
+                                                    .Select(group => new
+                                                    {
+                                                        Category = group.Key,
+                                                        Count = group.Count()
+                                                    })
+                                                    .ToListAsync();
+
+
+            return Ok(newsCountByCategory);
+        }
+
+        [HttpGet("top-categories")]
+        public async Task<IActionResult> GetTopCategories()
+        {
+            var result = await _context.News
+                .Where(news => news.Category != null)
+                .GroupBy(news => news.Category!.CategoryName)
+                .Select(group => new CategoryCountDtos
+                {
+                    Category = group.Key,
+                    Count = group.Count()
+                })
+                .OrderByDescending(g => g.Count)
+                .Take(3)
+                .ToListAsync();
+
+            return Ok(result);
+        }
+
+
+
+
+
     }
 }

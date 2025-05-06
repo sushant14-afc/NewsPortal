@@ -70,7 +70,9 @@ namespace NewsPortal.Controller
         [HttpGet("{id}")]
         public async Task<IActionResult> GetNewsById(int id)
         {
-            var news = await _context.News.FindAsync(id);
+            var news = await _context.News
+                                     .Include(n => n.Category) 
+                                     .FirstOrDefaultAsync(n => n.Id == id);
             if (news == null)
             {
                 return NotFound();
