@@ -1,4 +1,4 @@
-﻿@* @page "/News"
+﻿@page "/AllNews"
 @rendermode InteractiveServer
 @using NewsPortal.Application
 @using NewsPortal.Entity
@@ -9,7 +9,7 @@
 @inject NavigationManager Navigation
 
 
- <marquee class="text-danger fw-bold">📰 Latest News: Stay updated with the latest articles and updates here!</marquee>
+<marquee class="text-danger fw-bold">📰 Latest News: Stay updated with the latest articles and updates here!</marquee>
 
 @if (isLoading)
 {
@@ -24,15 +24,15 @@ else if (newsList != null && newsList.Count > 0)
 	{
 		<div class="container my-4">
 			<div class="card shadow-lg mx-auto border-0" style="max-width: 60rem; border-radius: 1rem;">
-				<img src="@news.ImageUrl" alt="News Image" class="card-img-top rounded-top" style="height: 400px; object-fit: cover;">
-
+				@* 				<img src="@news.ImageUrl" alt="News Image" class="card-img-top rounded-top" style="height: 400px; object-fit: cover;">*@
+ 
 				<div class="card-body p-4">
-					<h3 class="card-title mb-3"><strong>@news.Title</strong></h3>
+					<h3 class="card-title mb-3" @onclick="@(() => NavigateToDetails(news.Id))" style="cursor:pointer; color: #2ecc71;"><strong>@news.Title</strong></h3>
 
 					<h6 class="text-muted mb-2">Category: <i>@news.Category?.CategoryName</i></h6>
 
-					<p class="card-text" style="font-size: 1.1rem;">@news.Description</p>
-
+					@*<p class="card-text" style="font-size: 1.1rem;">@news.Description</p>*@
+ 
 					@if (AppState.IsLoggedIn)
 					{
 						<div class="d-flex justify-content-end mt-4">
@@ -99,6 +99,11 @@ else
 		}
 	}
 
+	void NavigateToDetails(int id)
+	{
+		Navigation.NavigateTo($"/News/Detail/{id}");
+	}
+
 	protected override async Task OnInitializedAsync()
 	{
 		isLoading = true;
@@ -116,7 +121,7 @@ else
 		if (response.IsSuccessStatusCode)
 		{
 			await Task.Delay(2000); // Optionally, navigate or refresh the list after deletion
-			Navigation.NavigateTo("/News", true); // Forces reload
+			Navigation.NavigateTo("/AllNews", true); // Forces reload
 		}
 		else
 		{
@@ -125,4 +130,3 @@ else
 	}
 
 }
- *@

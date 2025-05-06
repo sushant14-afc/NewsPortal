@@ -1,0 +1,35 @@
+﻿@page "/News/Detail/{Id:int}"
+@rendermode InteractiveServer
+@using NewsPortal.Entity
+@inject HttpClient Http
+
+<div class="container my-4">
+	<div class="card shadow-lg mx-auto border-0" style="max-width: 60rem; border-radius: 1rem;">
+		<img src="@newsList.ImageUrl" alt="News Image" class="card-img-top rounded-top" style="height: 400px; object-fit: cover;">
+
+		<div class="card-body p-4">
+			<h3 class="card-title mb-3"><strong>@newsList.Title</strong></h3>
+
+			<h6 class="text-muted mb-2">Category: <i>@newsList.Category?.CategoryName</i></h6>
+
+			<p class="card-text" style="font-size: 1.1rem;">@newsList.Description</p>
+		</div>
+	</div>
+</div>
+
+
+
+
+@code {
+	[Parameter]
+	public int Id{ get; set; }
+
+	private NewsEntity newsList = new();
+
+
+	protected override async Task OnInitializedAsync()
+	{
+		newsList = await Http.GetFromJsonAsync<NewsEntity>($"api/news/{Id}");
+	}
+
+}
